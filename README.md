@@ -86,23 +86,22 @@ graph TD
 
 ---
 
-## 📜 Project Evolution (Phases 1 to 3)
+## 📜 Project Evolution (Phases 1 to 7)
 
-Before reaching the Phase 4 Testing Engine, the platform evolved through several foundational milestones:
+The platform has rapidly evolved through 7 major phases of development:
 
 * **Phases 1 & 2 (The Core Engine):** Established the **HiClaw Coordinator** for inter-agent communication, implemented the **Claude Flow 6-step cognitive loop** (Understand → Decompose → Propose → Execute → Validate → Refine), and integrated foundational native Python filesystem and CLI tools.
-* **Phase 3 (CI/CD & Open Source Integration):**
-  * **GitHub Integration:** Native support for triggering GitHub Actions and opening Pull Requests via the `gh` CLI.
-  * **CI/CD Self-Healing Loop:** The Manager Agent autonomously detects CI pipeline failures post-deployment and enqueues high-priority debugging tasks.
-  * **Real-Time Terminal Dashboard:** Live interactive execution trace of all agents, DAG states, and exact failure metrics.
-  * **Fuzzy Path Matching:** Intelligent file resolution (using `difflib`) to gracefully handle human typos during test QA targeting.
-  * **13-Field Protocol:** Strict structural adherence to the HiClaw communication standard for robust message state tracking across Matrix rooms.
+* **Phase 3 (CI/CD & Open Source Integration):** Brought native GitHub integration, the Self-Healing CI/CD loop, `difflib` Fuzzy Path Matching, the CLI dashboard, and strictly enforced the 13-Field Matrix Protocol.
+* **Phase 4 (Platform Backend):** Erected the FastAPI backend server and robust Persistent Memory structures with project-level directory scoping.
+* **Phase 5 (Agentic Testing & Convergence UI):** Introduced the Sandbox Executor, the 5-Iteration Self-Healing Pattern, and real-time frontend UI dashboard polling for test coverage and convergence metrics.
+* **Phase 6 (Workspace Isolation):** Upgraded the Web UI for multi-project capability, completely isolating chat states and memory instances per project.
+* **Phase 7 (Token Optimization):** Integrated deep truncating rules in the Patch Engine to intelligently handle massive code files, preventing LLM context bloat and drastically reducing API costs.
 
 ---
 
-## ✨ Phase 4: Agentic Testing Engine
+## ✨ The Agentic Testing Engine (Phase 5+)
 
-The hallmark of the Phase 4 Engine is its ability to test itself natively without hallucinations:
+The hallmark of the current Engine is its ability to test itself natively without hallucinations:
 
 * **Sandbox Executor:** Spins off completely isolated subprocess environments mapping virtual environments (`.venv`), ensuring test executions are safe and dynamically bounded by CPU limits.
 * **Intelligent Patch Engine:** Triages testing errors using Heuristics (Rule-based Regex fixing) or LLMs (Dynamic Code Bug logic-solvers). An LLM handling a `CodeBug` patches the source logic implicitly. It will never loosen a valid test case to fake a "success" state.
