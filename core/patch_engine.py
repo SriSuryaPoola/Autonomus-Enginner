@@ -13,7 +13,11 @@ import re
 from dataclasses import dataclass
 from typing import Optional
 
+from core.pii_scrubber import PIIScrubber
+
 logger = logging.getLogger(__name__)
+_scrubber = PIIScrubber()
+
 
 
 @dataclass

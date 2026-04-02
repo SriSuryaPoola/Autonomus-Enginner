@@ -37,7 +37,14 @@
                     <button class="tab-btn" data-tab="reports">Reports</button>
                     <button class="tab-btn" data-tab="memory">Memory</button>
                 </div>
-                <div class="platform-badge">AI Autonomous Engineer</div>
+                <div class="header-right">
+                    <!-- P1 #5: Active LLM Provider badge -->
+                    <div class="llm-badge" id="llm-provider-badge" title="Active LLM Provider">
+                        <span class="llm-dot" id="llm-dot"></span>
+                        <span id="llm-provider-name">Detecting...</span>
+                    </div>
+                    <div class="platform-badge">AI Autonomous Engineer</div>
+                </div>
             </header>
 
             <section id="content-area">
@@ -85,12 +92,24 @@
                     <div class="modal-content">
                         <h3>Configuration & Limits</h3>
                         <div class="field">
-                            <label>Token Limit</label>
-                            <input type="number" id="cfg-tokens" value="100000">
+                            <label>LLM Provider</label>
+                            <select id="cfg-llm-provider">
+                                <option value="auto">Auto-detect</option>
+                                <option value="anthropic">Anthropic (Claude)</option>
+                                <option value="openai">OpenAI (GPT-4o)</option>
+                                <option value="ollama">Ollama (Local / Free)</option>
+                                <option value="gemini">Gemini</option>
+                                <option value="heuristic">Heuristic (No API)</option>
+                            </select>
                         </div>
                         <div class="field">
-                            <label>Max Retries</label>
-                            <input type="number" id="cfg-retries" value="3">
+                            <label>Token Budget per Task</label>
+                            <input type="number" id="cfg-tokens" value="50000">
+                            <small>Approx. $0.03–$0.15 per task at Sonnet pricing</small>
+                        </div>
+                        <div class="field">
+                            <label>Max Retries (Convergence Loops)</label>
+                            <input type="number" id="cfg-retries" value="5">
                         </div>
                         <div class="modal-actions">
                              <button id="restart-tour-btn" class="secondary">Restart Tour</button>
@@ -119,6 +138,25 @@
                             <label>SELF-HEALS</label>
                             <h2 id="conv-heals">—</h2>
                         </div>
+                    </div>
+                    <!-- P1 #8: Token burn meter -->
+                    <div class="token-burn-bar" id="token-burn-section">
+                        <div class="token-burn-header">
+                            <span>TOKEN BUDGET</span>
+                            <span id="token-burn-label">— / 50,000</span>
+                        </div>
+                        <div class="token-burn-track">
+                            <div class="token-burn-fill" id="token-burn-fill" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <!-- P1 #9: Static Analysis scores -->
+                    <div class="static-analysis-row" id="static-analysis-row">
+                        <span class="sa-label">STATIC ANALYSIS</span>
+                        <span class="sa-badge" id="sa-ruff">ruff —</span>
+                        <span class="sa-badge" id="sa-bandit">bandit —</span>
+                        <span class="sa-badge" id="sa-mypy">mypy —</span>
+                        <!-- P1 #7: Rollback indicator -->
+                        <span class="sa-badge rollback-badge hidden" id="rollback-badge">⟲ ROLLED BACK</span>
                     </div>
                     <!-- Legacy stats (kept for compatibility) -->
                     <div class="stats-grid" style="margin-top:16px;">

@@ -1,0 +1,63 @@
+# Agent Personality Configuration
+# Place this file in your repository root to customise the autonomous engineer's behaviour.
+#
+# Docs: https://github.com/SriSuryaPoola/autonomous-engineer/docs/agentconfig.md
+
+[identity]
+# Name shown in dashboard and chat logs
+name = "Autonomous Engineer"
+
+# Seniority profile controls the agent's risk tolerance and coding style:
+#
+# strict_architect  — Meticulous. Prefers refactoring, enforces patterns,
+#                     refuses risky shortcuts. Best for production codebases.
+#
+# balanced_senior   — Default. Pragmatic balance of quality vs speed.
+#                     Good for most projects.
+#
+# fast_hacker       — Speed-first. Accepts technical debt, generates stubs,
+#                     prefers working code over perfect code. Good for prototypes.
+seniority = "balanced_senior"
+
+[quality]
+# Minimum line coverage required before a task is marked CONVERGED
+coverage_threshold = 70
+
+# Maximum convergence iterations before human escalation
+max_iterations = 5
+
+# Confidence threshold (0–100) below which HITL break-glass is triggered
+hitl_confidence_threshold = 85
+
+# Run static analysis (ruff + bandit + mypy) before convergence
+static_analysis = true
+
+[cost]
+# Per-task token budget (soft cap — agent will hibernate if exceeded)
+token_budget_per_task = 50000
+
+# Per-project token budget (hard cap)
+token_budget_per_project = 500000
+
+# Enable SLM routing — use local/cheap models for low-complexity tasks
+slm_routing = true
+
+# Preferred LLM provider: auto | anthropic | openai | ollama | gemini | heuristic
+llm_provider = "auto"
+
+[security]
+# Scrub PII and secrets before sending code to external LLMs
+pii_scrubbing = true
+
+# Block convergence if bandit detects high-severity security issues
+block_on_security_fail = true
+
+[style]
+# Language for generated docstrings and comments
+docstring_style = "google"   # google | numpy | sphinx
+
+# Enforce type hints in generated Python code
+enforce_type_hints = true
+
+# Maximum line length (passed to ruff formatter)
+max_line_length = 100

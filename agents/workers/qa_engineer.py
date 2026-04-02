@@ -29,6 +29,8 @@ from core.memory import ProjectMemory
 from core.tools.fs_tools import FileSystemTools
 from core.sandbox.executor import SandboxExecutor
 from core.patch_engine import PatchEngine
+from core.snapshot import SnapshotManager
+from core.static_analysis import StaticAnalysisGatekeeper
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +59,7 @@ class QAEngineer(WorkerAgent):
         self.project_memory = ProjectMemory(base_dir=memory_dir or "memory")
         self.sandbox = SandboxExecutor(timeout=60)
         self.patch_engine = PatchEngine(claude_client=claude_client)
+        self.static_analysis = StaticAnalysisGatekeeper()
 
     # -------------------------------------------------------------------------
     # Core Task Processing — Convergence Loop
@@ -77,6 +80,10 @@ class QAEngineer(WorkerAgent):
         
         # Determine source path for coverage measurement
         source_path = self._infer_source_path(task, cwd)
+
+        # P1: Take filesystem snapshot before any mutations
+        snapshot = SnapshotManager(cwd)
+        snapshot.take()
 
         # Generate initial test code
         current_code = self._generate_tests(subrole, task)
@@ -102,14 +109,33 @@ class QAEngineer(WorkerAgent):
 
             # Step 2: Check for convergence
             if result.success:
+                # P1: Static analysis gate — must pass before convergence declared
+                sa_result = self.static_analysis.run(filename, cwd)
+                if not sa_result.passed:
+                    self._broadcast(task,
+                        f"⚠️ Static analysis blocked convergence: {'; '.join(sa_result.issues[:2])}"
+                    )
+                    # Treat as a soft failure — patch and retry
+                    patch = self.patch_engine.patch_test(
+                        original_code=current_code,
+                        failure_log="\n".join(sa_result.issues),
+                        diagnosis="SyntaxError"
+                    )
+                    current_code = patch.patched_code
+                    FileSystemTools.write_file(filename, current_code)
+                    self_heals += 1
+                    continue
+
                 # Run coverage measurement after successful test pass
                 if source_path:
                     coverage_result = self.sandbox.run_coverage(filename, source_path, cwd)
                     self._logger.info(f"[QA] Coverage: {coverage_result.percentage:.1f}%")
 
                     if coverage_result.percentage >= COVERAGE_THRESHOLD:
+                        snapshot.cleanup()  # Successful — free snapshot storage
                         self._broadcast(task,
-                            f"✅ CONVERGED: Tests passed + Coverage {coverage_result.percentage:.1f}% "
+                            f"✅ CONVERGED: Tests passed + Static analysis clean + "
+                            f"Coverage {coverage_result.percentage:.1f}% "
                             f"(threshold: {COVERAGE_THRESHOLD}%) in {iterations} iteration(s)."
                         )
                         break  # Full convergence achieved
@@ -146,10 +172,12 @@ class QAEngineer(WorkerAgent):
             })
 
             if attempt == MAX_RETRIES - 1:
-                # Final attempt failed — escalate
+                # Final attempt failed — atomic rollback to last green state
+                rolled_back = snapshot.rollback()
+                rb_msg = "Rolled back to last green state." if rolled_back else "Rollback unavailable."
                 self._broadcast(task,
                     f"❌ ESCALATED: Could not converge after {MAX_RETRIES} attempts. "
-                    f"Last diagnosis: {diagnosis}. Human review required."
+                    f"Last diagnosis: {diagnosis}. {rb_msg} Human review required."
                 )
                 break
 

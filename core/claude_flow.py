@@ -29,6 +29,9 @@ from config.settings import (
 )
 from core.message import TaskSpec, TaskStatus
 from core.memory import AgentMemory
+from core.slm_router import SLMRouter, TaskComplexity
+from core.hitl_manager import HITLManager, estimate_confidence
+from core.pii_scrubber import PIIScrubber
 
 if TYPE_CHECKING:
     from core.agent_base import WorkerAgent

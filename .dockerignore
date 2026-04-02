@@ -1,0 +1,21 @@
+# Docker ignore — don't send these to the Docker build context
+.git/
+.gitignore
+.env
+.env.*
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+venv/
+.venv/
+node_modules/
+*.log
+.coverage
+htmlcov/
+test_repos/
+memory/projects/
+Report/
+.github/
+docs/platform_demo.png
+Improvents docs/

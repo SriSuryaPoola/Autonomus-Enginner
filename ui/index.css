@@ -471,3 +471,155 @@ body {
 }
 .memory-card:hover { border-color: var(--acc-magenta); }
 .memory-card h4 { margin-bottom: 8px; color: var(--acc-cyan); }
+
+/* ── P1 UI: LLM Provider Badge ───────────────────────────────── */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.llm-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,242,255,0.07);
+    border: 1px solid rgba(0,242,255,0.2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--acc-cyan);
+    cursor: default;
+    transition: background 0.3s;
+}
+
+.llm-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #888;
+    animation: pulse-dot 2s infinite;
+}
+.llm-dot.active   { background: #00ff88; }
+.llm-dot.heuristic { background: #ff9900; }
+.llm-dot.error    { background: #ff4444; }
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+
+/* ── P1 UI: Token Burn Meter ─────────────────────────────────── */
+.token-burn-bar {
+    margin: 12px 0 6px;
+    padding: 12px 16px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+}
+
+.token-burn-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+#token-burn-label { color: var(--acc-cyan); }
+
+.token-burn-track {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.token-burn-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, #00f2ff, #00ff88);
+    transition: width 0.6s ease, background 0.4s;
+}
+
+.token-burn-fill.warn  { background: linear-gradient(90deg, #ff9900, #ff6600); }
+.token-burn-fill.over  { background: linear-gradient(90deg, #ff4444, #cc0000); }
+
+/* ── P1 UI: Static Analysis Row ──────────────────────────────── */
+.static-analysis-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.sa-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-right: 4px;
+}
+
+.sa-badge {
+    font-size: 0.72rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-muted);
+    transition: all 0.3s;
+}
+
+.sa-badge.pass { border-color: #00ff88; color: #00ff88; background: rgba(0,255,136,0.08); }
+.sa-badge.fail { border-color: #ff4444; color: #ff4444; background: rgba(255,68,68,0.08); }
+.sa-badge.skip { border-color: #666;    color: #888; }
+
+/* ── P1 UI: Rollback Badge ───────────────────────────────────── */
+.rollback-badge {
+    border-color: #ff9900 !important;
+    color: #ff9900 !important;
+    background: rgba(255,153,0,0.1) !important;
+    animation: rollback-pulse 1.5s ease 3;
+}
+
+@keyframes rollback-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.6; transform: scale(1.05); }
+}
+
+/* Settings select field */
+.field select, .field small {
+    width: 100%;
+    margin-top: 4px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-main);
+    padding: 8px 12px;
+    font-size: 0.85rem;
+}
+
+.field small {
+    display: block;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    padding: 4px 0 0;
+}
+

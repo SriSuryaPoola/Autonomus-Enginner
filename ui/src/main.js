@@ -266,10 +266,10 @@ function startConvergencePolling(projectId) {
  * Update the convergence panel metrics with live data from the API.
  */
 function updateConvergencePanel(data) {
-    const stateEl = document.getElementById('conv-state-label');
+    const stateEl    = document.getElementById('conv-state-label');
     const coverageEl = document.getElementById('conv-coverage');
-    const iterEl = document.getElementById('conv-iterations');
-    const healsEl = document.getElementById('conv-heals');
+    const iterEl     = document.getElementById('conv-iterations');
+    const healsEl    = document.getElementById('conv-heals');
 
     if (!stateEl) return;
 
@@ -288,7 +288,55 @@ function updateConvergencePanel(data) {
     // Iterations & self-heals
     iterEl.textContent = data.iterations ?? '—';
     healsEl.textContent = data.self_heals ?? '—';
+
+    // ── P1 #8: Token Burn Meter ──────────────────────────────────
+    const tokensUsed  = data.tokens_used ?? 0;
+    const tokenBudget = parseInt(localStorage.getItem('engineer_token_limit') || '50000');
+    const burnPct     = Math.min((tokensUsed / tokenBudget) * 100, 100);
+    const burnFill    = document.getElementById('token-burn-fill');
+    const burnLabel   = document.getElementById('token-burn-label');
+    if (burnFill && burnLabel) {
+        burnFill.style.width = `${burnPct}%`;
+        burnFill.classList.toggle('warn', burnPct >= 70 && burnPct < 90);
+        burnFill.classList.toggle('over', burnPct >= 90);
+        burnLabel.textContent = tokensUsed
+            ? `${tokensUsed.toLocaleString()} / ${tokenBudget.toLocaleString()}`
+            : `— / ${tokenBudget.toLocaleString()}`;
+    }
+
+    // ── P1 #9: Static Analysis Score Badges ─────────────────────
+    const sa = data.static_analysis || {};
+    const saMap = { 'sa-ruff': sa.ruff, 'sa-bandit': sa.bandit, 'sa-mypy': sa.mypy };
+    Object.entries(saMap).forEach(([id, score]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const label = id.replace('sa-', '');
+        el.className = 'sa-badge';
+        if (score === 'pass')      { el.textContent = `${label} OK`;   el.classList.add('pass'); }
+        else if (score === 'fail') { el.textContent = `${label} FAIL`; el.classList.add('fail'); }
+        else if (score === 'skip') { el.textContent = `${label} skip`; el.classList.add('skip'); }
+        else                       { el.textContent = `${label} —`; }
+    });
+
+    // ── P1 #7: Rollback Indicator ────────────────────────────────
+    const rollbackEl = document.getElementById('rollback-badge');
+    if (rollbackEl) {
+        if (data.rolled_back) {
+            rollbackEl.classList.remove('hidden');
+            if (data.rolled_back !== window._lastRollbackState) {
+                // Re-trigger animation
+                rollbackEl.style.animation = 'none';
+                void rollbackEl.offsetWidth;
+                rollbackEl.style.animation = '';
+                addChatMessage('system', '⚠️ Atomic rollback triggered — workspace restored to last green state.');
+            }
+        } else {
+            rollbackEl.classList.add('hidden');
+        }
+        window._lastRollbackState = data.rolled_back;
+    }
 }
+
 
 function addChatMessage(role, text) {
     const chatMsgs = document.getElementById('chat-messages');
@@ -352,11 +400,50 @@ const restartTourBtn = document.getElementById('restart-tour-btn');
 settingsBtn.onclick = () => settingsModal.classList.toggle('hidden');
 
 saveSettingsBtn.onclick = () => {
-    const limit = document.getElementById('cfg-tokens').value;
+    const limit    = document.getElementById('cfg-tokens').value;
+    const provider = document.getElementById('cfg-llm-provider')?.value || 'auto';
     localStorage.setItem('engineer_token_limit', limit);
+    localStorage.setItem('engineer_llm_provider', provider);
     settingsModal.classList.add('hidden');
-    addChatMessage("system", "Settings updated locally.");
+    // Refresh LLM badge
+    fetchAndShowLLMProvider();
+    addChatMessage("system", `Settings saved — LLM: ${provider}, Budget: ${parseInt(limit).toLocaleString()} tokens`);
 };
+
+// ── P1 #5: LLM Provider detection ───────────────────────────────
+async function fetchAndShowLLMProvider() {
+    const nameEl = document.getElementById('llm-provider-name');
+    const dotEl  = document.getElementById('llm-dot');
+    if (!nameEl || !dotEl) return;
+
+    // Restore saved preference to selector
+    const savedProvider = localStorage.getItem('engineer_llm_provider') || 'auto';
+    const sel = document.getElementById('cfg-llm-provider');
+    if (sel) sel.value = savedProvider;
+
+    try {
+        const resp = await fetch(`${API_BASE.replace('/api','')}/health`, { signal: AbortSignal.timeout(3000) });
+        if (resp.ok) {
+            const info = await resp.json();
+            const provider = info.llm_provider || savedProvider;
+            nameEl.textContent = provider === 'heuristic' ? 'Heuristic (No API)'
+                               : provider === 'anthropic'  ? 'Claude 3.5'
+                               : provider === 'openai'     ? 'GPT-4o'
+                               : provider === 'ollama'     ? 'Ollama (Local)'
+                               : provider === 'gemini'     ? 'Gemini'
+                               : provider;
+            dotEl.className = 'llm-dot';
+            dotEl.classList.add(provider === 'heuristic' ? 'heuristic' : 'active');
+            return;
+        }
+    } catch (_) { /* backend offline */ }
+
+    // Offline — show from localStorage
+    nameEl.textContent = savedProvider === 'auto' ? 'Auto-detect' : savedProvider;
+    dotEl.className = 'llm-dot';
+    dotEl.classList.add(savedProvider === 'heuristic' ? 'heuristic' : 'active');
+}
+
 
 let tour; // Global tour instance
 
@@ -396,6 +483,7 @@ async function init() {
 
     await fetchProjects();
     connectWS();
+    fetchAndShowLLMProvider();  // P1 #5 — detect & show active LLM
 }
 
 init();

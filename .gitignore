@@ -1,14 +1,53 @@
+# Python
 __pycache__/
-.pytest_cache/
-*.pyc
+*.py[cod]
 *.pyo
 *.pyd
-*.txt
-!requirements.txt
-!dummy.txt
-.env
-.venv
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
 venv/
-ENV/
-env.bak/
-venv.bak/
+.venv/
+env/
+.env
+
+# Environment variables / secrets
+.env
+.env.*
+*.env
+
+# Coverage
+.coverage
+.coverage.*
+htmlcov/
+.coverage_report.json
+coverage.xml
+
+# Pytest
+.pytest_cache/
+test_*.txt
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs and temp files
+*.log
+out.txt
+output.txt
+tmp_*.txt
+*.tmp
+
+# Memory (project-level data — keep structure, not contents)
+memory/projects/*/
+!memory/projects/.gitkeep
+
+# Build artifacts
+*.pyc
+*.pyo

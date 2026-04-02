@@ -1,0 +1,77 @@
+# pyproject.toml — AI Autonomous Engineer
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "autonomous-engineer"
+version = "1.0.0"
+description = "Multi-agent platform that writes, tests, and self-heals code autonomously"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [{ name = "SriSuryaPoola" }]
+keywords = ["ai", "agents", "autonomous", "testing", "llm"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.29.0",
+    "anthropic>=0.25.0",
+    "python-dotenv>=1.0.0",
+    "aiofiles>=23.0.0",
+    "requests>=2.31.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.4.0",
+    "mypy>=1.9.0",
+    "bandit>=1.7.0",
+    "pre-commit>=3.7.0",
+]
+llm-openai = ["openai>=1.25.0"]
+llm-ollama = ["ollama>=0.2.0"]
+
+[project.scripts]
+ae = "cli:main"
+autonomous-engineer = "cli:main"
+
+[project.urls]
+Homepage = "https://github.com/SriSuryaPoola/autonomous-engineer"
+Repository = "https://github.com/SriSuryaPoola/autonomous-engineer"
+Issues = "https://github.com/SriSuryaPoola/autonomous-engineer/issues"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+warn_return_any = false
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".venv", "test_repos"]
+skips = ["B101", "B601"]

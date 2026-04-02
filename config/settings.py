@@ -2,17 +2,28 @@
 Global settings and configuration for the Autonomous Engineering Team.
 """
 
+# ─── LLM Provider ─────────────────────────────────────────────────────────────
+# Options: "anthropic" | "openai" | "ollama" | "gemini" | "heuristic" | "auto"
+# "auto" = detect first available provider from the list above
+import os as _os
+LLM_PROVIDER = _os.getenv("LLM_PROVIDER", "auto")
+
 # ─── Execution Limits ─────────────────────────────────────────────────────────
-MAX_RETRIES = 3                 # Max retry attempts per task in self-improvement loop
+MAX_RETRIES = 5                 # Max convergence iterations per task
 QUALITY_THRESHOLD = 0.7         # Minimum quality score (0.0–1.0) to accept output
 PARALLEL_WORKERS = 4            # Max concurrent worker executions
 CLAUDE_FLOW_MAX_MICRO_TASKS = 10  # Max micro-tasks a Claude Flow phase can spawn
 
 # ─── Cost Control ─────────────────────────────────────────────────────────────
-TOKEN_BUDGET_PER_TASK = 100000  # Max token budget per task
-EARLY_STOPPING_ROUNDS = 2       # Stop early if no improvement over X rounds
-TIMEOUT_PER_TOOL = 60           # Max execution seconds before killing tool process
-MAX_RETRIES_PER_WORKER = 3      # Worker-level tool retry tolerance
+TOKEN_BUDGET_PER_TASK = 50_000   # Soft cap tokens per task (~$0.15 at Sonnet pricing)
+TOKEN_BUDGET_PER_PROJECT = 500_000  # Hard cap tokens per project lifetime
+EARLY_STOPPING_ROUNDS = 2        # Stop early if no improvement over X rounds
+TIMEOUT_PER_TOOL = 60            # Max execution seconds before killing tool process
+MAX_RETRIES_PER_WORKER = 3       # Worker-level tool retry tolerance
+
+# ─── Static Analysis ──────────────────────────────────────────────────────────
+STATIC_ANALYSIS_ENABLED = True   # Run ruff + bandit + mypy in Validate step
+STATIC_ANALYSIS_BLOCK_ON_FAIL = True  # Block convergence if analysis fails
 
 # ─── Logging ──────────────────────────────────────────────────────────────────
 LOG_LEVEL = "INFO"              # DEBUG | INFO | WARNING | ERROR | CRITICAL
