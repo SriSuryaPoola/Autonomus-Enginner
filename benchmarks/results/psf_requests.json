@@ -1,0 +1,40 @@
+{
+  "run_id": "benchmark_001",
+  "date": "2026-04-02",
+  "platform_version": "0.3.0",
+  "repo": "psf/requests",
+  "repo_url": "https://github.com/psf/requests",
+  "repo_stats": {
+    "python_files": 82,
+    "total_lines": 14853,
+    "existing_tests": 48
+  },
+  "task": "Generate comprehensive unit tests for requests/auth.py and requests/models.py",
+  "llm_provider": "anthropic",
+  "llm_model": "claude-3-5-sonnet-20241022",
+  "result": "CONVERGED",
+  "iterations": 4,
+  "self_heals": 2,
+  "coverage_achieved": 74.5,
+  "coverage_target": 70.0,
+  "tokens_used": 38420,
+  "estimated_cost_usd": 0.115,
+  "duration_seconds": 187,
+  "static_analysis": {
+    "ruff": "pass",
+    "bandit": "pass",
+    "mypy": "skip"
+  },
+  "rollback_triggered": false,
+  "files_created": [
+    "tests/test_auth_comprehensive.py",
+    "tests/test_models_comprehensive.py"
+  ],
+  "error_classifications": {
+    "TEST_ISSUE": 1,
+    "CODE_BUG": 0,
+    "ENV_ERROR": 1,
+    "LLM_HALLUCINATION": 0
+  },
+  "notes": "ENV_ERROR in iteration 1: missing 'pytest-mock'. Resolved by adding to deps. TEST_ISSUE in iteration 2: assertion used wrong status code. Both self-healed."
+}

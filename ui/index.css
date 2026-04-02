@@ -623,3 +623,338 @@ body {
     padding: 4px 0 0;
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   WAVE 5 — P2/P3 NEW COMPONENTS
+═══════════════════════════════════════════════════════════════ */
+
+/* Agent Health Panel */
+.agent-health-panel {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+}
+.health-header {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+.health-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+.health-agent { flex: 1; }
+.health-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    transition: background 0.3s;
+}
+.health-dot.green { background: #39d353; box-shadow: 0 0 6px #39d35388; }
+.health-dot.yellow { background: #f0c040; box-shadow: 0 0 6px #f0c04088; }
+.health-dot.red { background: #f85149; box-shadow: 0 0 6px #f8514988; }
+.health-latency { font-size: 0.68rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+/* Reasoning Trace */
+.reasoning-trace {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 12px 0;
+    overflow: hidden;
+}
+.trace-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    background: rgba(0,0,0,0.2);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+}
+.trace-status {
+    font-size: 0.68rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(100,100,100,0.15);
+    color: var(--text-muted);
+}
+.trace-status.active { background: rgba(57,211,83,0.15); color: #39d353; }
+.trace-body {
+    padding: 10px 14px;
+    max-height: 160px;
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+}
+.trace-line {
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-secondary);
+    animation: fadeSlideIn 0.3s ease;
+}
+.trace-line.placeholder { color: var(--text-muted); }
+.trace-line.phase { color: #58a6ff; font-weight: 600; }
+.trace-line.patch { color: #f0c040; }
+.trace-line.success { color: #39d353; }
+.trace-line.error { color: #f85149; }
+@keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* DAG Nodes */
+.dag-nodes {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 0;
+    overflow-x: auto;
+}
+.dag-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    min-width: 80px;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+.dag-node .node-icon { font-size: 1.1rem; }
+.dag-node .node-status {
+    font-size: 0.60rem;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background: rgba(100,100,100,0.15);
+    color: var(--text-muted);
+}
+.dag-node.running { border-color: #58a6ff; background: rgba(88,166,255,0.08); }
+.dag-node.running .node-status { background: rgba(88,166,255,0.2); color: #58a6ff; }
+.dag-node.done { border-color: #39d353; background: rgba(57,211,83,0.06); }
+.dag-node.done .node-status { background: rgba(57,211,83,0.2); color: #39d353; }
+.dag-node.failed { border-color: #f85149; background: rgba(248,81,73,0.08); }
+.dag-arrow { color: var(--text-muted); font-size: 1.2rem; padding: 0 4px; }
+
+/* ── Benchmarks Tab ── */
+#benchmarks-view { padding: 0; }
+.benchmarks-header { padding: 20px 24px 10px; }
+.benchmarks-header h2 { color: var(--text-primary); font-size: 1.2rem; margin: 0 0 4px; }
+.bench-subtitle { color: var(--text-muted); font-size: 0.82rem; margin: 0; }
+
+.bench-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 12px 24px;
+}
+.bench-summary-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+}
+.bench-num {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+}
+.bench-num.green { color: #39d353; }
+.bench-summary-card label { font-size: 0.68rem; color: var(--text-muted); letter-spacing: 0.06em; }
+
+.bench-table-wrap {
+    padding: 0 24px;
+    overflow-x: auto;
+}
+.bench-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+.bench-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+}
+.bench-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-secondary);
+}
+.bench-table tr:hover td { background: rgba(255,255,255,0.03); }
+.bench-result-pass { color: #39d353; font-weight: 600; }
+.bench-result-fail { color: #f85149; font-weight: 600; }
+.bench-note { font-size: 0.72rem; color: var(--text-muted); padding: 10px 24px; }
+.bench-note a { color: var(--accent); }
+
+/* ── Cost Estimation Banner ── */
+.cost-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: rgba(240,192,64,0.12);
+    border: 1px solid rgba(240,192,64,0.35);
+    border-radius: 8px;
+    margin: 8px;
+    font-size: 0.82rem;
+    color: #f0c040;
+    animation: fadeSlideIn 0.3s ease;
+}
+.cost-icon { font-size: 1.1rem; }
+#cost-estimate-text { flex: 1; }
+.cost-btn {
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.cost-btn.approve { border-color: #39d353; color: #39d353; background: rgba(57,211,83,0.1); }
+.cost-btn.approve:hover { background: rgba(57,211,83,0.2); }
+.cost-btn.dismiss { border-color: rgba(240,192,64,0.5); color: #f0c040; background: transparent; }
+
+/* ── HITL Modal ── */
+.hitl-modal .modal-content { max-width: 480px; text-align: center; }
+.hitl-icon { font-size: 3rem; margin-bottom: 8px; }
+.hitl-subtitle { color: var(--text-muted); font-size: 0.85rem; margin: 4px 0 16px; }
+.hitl-info {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+.hitl-stat label { display: block; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 0.08em; }
+.hitl-stat span { font-size: 1.4rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; color: #f0c040; }
+.hitl-context-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: left;
+    margin-bottom: 16px;
+}
+.hitl-context-box label { font-size: 0.65rem; color: var(--text-muted); letter-spacing: 0.08em; display: block; margin-bottom: 6px; }
+.hitl-context-box p { font-size: 0.82rem; color: var(--text-secondary); margin: 0; }
+.secondary.danger { border-color: #f85149; color: #f85149; }
+.secondary.danger:hover { background: rgba(248,81,73,0.1); }
+
+/* ── Memory Semantic Search ── */
+.memory-search-bar {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+}
+.memory-search-bar input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+}
+.memory-search-bar button {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: all 0.2s;
+}
+.memory-search-bar button:hover { border-color: var(--accent); color: var(--accent); }
+
+.memory-results {
+    padding: 12px 16px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+.memory-result-item {
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-size: 0.80rem;
+}
+.memory-result-item .result-path { color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-bottom: 4px; }
+.memory-result-item .result-snippet { color: var(--text-secondary); white-space: pre-wrap; }
+.memory-result-item .result-score { font-size: 0.68rem; color: var(--text-muted); }
+.memory-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 0.68rem;
+    background: rgba(100,100,100,0.15);
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+.memory-badge.active { background: rgba(57,211,83,0.15); color: #39d353; }
+
+/* ── Settings Grid ── */
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.settings-wide { max-width: 640px; }
+input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    height: 4px;
+}
+
+/* ── Dark/Light mode toggle ── */
+#theme-toggle-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 6px;
+    transition: all 0.2s;
+}
+#theme-toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Light mode overrides */
+body.light-mode {
+    --bg-primary: #f6f8fa;
+    --bg-secondary: #ffffff;
+    --surface: #eaecef;
+    --border: #d0d7de;
+    --text-primary: #1f2328;
+    --text-secondary: #57606a;
+    --text-muted: #8c959f;
+    --accent: #0969da;
+}
+body.light-mode .convergence-panel { background: var(--bg-secondary); }
+body.light-mode .token-burn-track { background: #e0e0e0; }
+body.light-mode .bench-table td { border-color: rgba(0,0,0,0.06); }
+body.light-mode .trace-body { background: #f9f9f9; }
+body.light-mode .dag-node { background: var(--bg-secondary); }
+
+/* ── Error type badge in SA row (uses .sa-badge base styles) ── */

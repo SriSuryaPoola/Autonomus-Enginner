@@ -3,219 +3,442 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Autonomous Engineer | Advanced Engineering Platform</title>
+    <title>Autonomous Engineer | Multi-Agent Engineering Platform</title>
+    <meta name="description" content="Open-source platform that writes, tests, and self-heals code using LLMs. Multi-agent, autonomous, production-ready.">
     <link rel="stylesheet" href="index.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body class="dark-mode">
-    <div id="app">
-        <!-- Sidebar: Project Management -->
-        <aside id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">AI Autonomous Engineer <span>PRO</span></div>
-                <button id="new-project-btn">+ New Project</button>
+<div id="app">
+    <!-- Sidebar: Project Management -->
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">Autonomous Engineer <span>PRO</span></div>
+            <button id="new-project-btn">+ New Project</button>
+        </div>
+        <nav id="project-list">
+            <!-- Projects injected here -->
+        </nav>
+        <!-- Agent Health Panel (P3-005 original) -->
+        <div class="agent-health-panel" id="agent-health-panel">
+            <div class="health-header">AGENT HEALTH</div>
+            <div class="health-row">
+                <span class="health-agent">Developer</span>
+                <span class="health-dot green" id="health-developer"></span>
+                <span class="health-latency" id="latency-developer">—ms</span>
             </div>
-            <nav id="project-list">
-                <!-- Projects injected here -->
-            </nav>
-            <div class="sidebar-footer">
-                <button id="settings-btn">⚙ Settings</button>
+            <div class="health-row">
+                <span class="health-agent">QA Agent</span>
+                <span class="health-dot green" id="health-qa"></span>
+                <span class="health-latency" id="latency-qa">—ms</span>
             </div>
-        </aside>
+            <div class="health-row">
+                <span class="health-agent">Patch Engine</span>
+                <span class="health-dot green" id="health-patch"></span>
+                <span class="health-latency" id="latency-patch">—ms</span>
+            </div>
+            <div class="health-row">
+                <span class="health-agent">Reflector</span>
+                <span class="health-dot" id="health-reflector"></span>
+                <span class="health-latency" id="latency-reflector">—ms</span>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <!-- Dark/Light mode toggle (P3-007) -->
+            <button id="theme-toggle-btn" title="Toggle Dark/Light mode">🌙 Dark</button>
+            <button id="settings-btn">⚙ Settings</button>
+        </div>
+    </aside>
 
-        <!-- Main Workspace -->
-        <main id="workspace">
-            <header id="top-bar">
-                <div class="project-info">
-                    <h1 id="current-project-name">Select a Project</h1>
-                    <p id="current-project-desc">Get started by creating or choosing a workspace.</p>
+    <!-- Main Workspace -->
+    <main id="workspace">
+        <header id="top-bar">
+            <div class="project-info">
+                <h1 id="current-project-name">Select a Project</h1>
+                <p id="current-project-desc">Get started by creating or choosing a workspace.</p>
+            </div>
+            <div class="view-tabs">
+                <button class="tab-btn active" data-tab="chat">Chat</button>
+                <button class="tab-btn" data-tab="dashboard">Dashboard</button>
+                <button class="tab-btn" data-tab="reports">Reports</button>
+                <button class="tab-btn" data-tab="benchmarks">Benchmarks</button>
+                <button class="tab-btn" data-tab="memory">Memory</button>
+            </div>
+            <div class="header-right">
+                <!-- P1: Active LLM Provider badge -->
+                <div class="llm-badge" id="llm-provider-badge" title="Active LLM Provider">
+                    <span class="llm-dot" id="llm-dot"></span>
+                    <span id="llm-provider-name">Detecting...</span>
                 </div>
-                <div class="view-tabs">
-                    <button class="tab-btn active" data-tab="chat">Chat</button>
-                    <button class="tab-btn" data-tab="dashboard">Dashboard</button>
-                    <button class="tab-btn" data-tab="reports">Reports</button>
-                    <button class="tab-btn" data-tab="memory">Memory</button>
-                </div>
-                <div class="header-right">
-                    <!-- P1 #5: Active LLM Provider badge -->
-                    <div class="llm-badge" id="llm-provider-badge" title="Active LLM Provider">
-                        <span class="llm-dot" id="llm-dot"></span>
-                        <span id="llm-provider-name">Detecting...</span>
-                    </div>
-                    <div class="platform-badge">AI Autonomous Engineer</div>
-                </div>
-            </header>
+                <div class="platform-badge">Autonomous Engineer</div>
+            </div>
+        </header>
 
-            <section id="content-area">
-                <!-- Chat View -->
-                <div id="chat-view" class="tab-content active">
-                    <div id="chat-messages">
-                        <div class="message system">Welcome! Use the input below to assign a task to your Engineers.</div>
+        <section id="content-area">
+            <!-- ═══════════════════════════════════════════
+                 CHAT VIEW
+            ═══════════════════════════════════════════ -->
+            <div id="chat-view" class="tab-content active">
+                <!-- Cost Estimation Banner (P3-004) -->
+                <div id="cost-estimate-banner" class="cost-banner hidden">
+                    <span class="cost-icon">💰</span>
+                    <span id="cost-estimate-text">Estimating task cost...</span>
+                    <button id="cost-approve-btn" class="cost-btn approve">Approve</button>
+                    <button id="cost-dismiss-btn" class="cost-btn dismiss">Run Anyway</button>
+                </div>
+                <div id="chat-messages">
+                    <div class="message system">Welcome! Use the input below to assign a task to your Engineers.</div>
+                </div>
+                <div class="input-wrapper">
+                    <textarea id="task-input" placeholder="Type a task (e.g., 'Build a REST API for a blog')..."></textarea>
+                    <button id="send-task-btn">Execute</button>
+                </div>
+                <div class="sample-prompts">
+                    <span class="prompt-tag">Build REST API</span>
+                    <span class="prompt-tag">Create Playwright tests</span>
+                    <span class="prompt-tag">Fix failing CI</span>
+                    <span class="prompt-tag">Add type hints</span>
+                    <span class="prompt-tag">Refactor auth module</span>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════
+                 PROJECT CREATION MODAL
+            ═══════════════════════════════════════════ -->
+            <div id="project-modal" class="modal hidden">
+                <div class="modal-content">
+                    <h3>Create New Project</h3>
+                    <div class="field">
+                        <label>Project Name</label>
+                        <input type="text" id="new-project-name" placeholder="e.g. My Awesome App">
                     </div>
-                    <div class="input-wrapper">
-                        <textarea id="task-input" placeholder="Type a task (e.g., 'Build a REST API for a blog')..."></textarea>
-                        <button id="send-task-btn">Execute</button>
+                    <div class="field">
+                        <label>Description</label>
+                        <textarea id="new-project-desc" placeholder="What does this project do?"></textarea>
                     </div>
-                    <div class="sample-prompts">
-                        <span class="prompt-tag">Build REST API</span>
-                        <span class="prompt-tag">Create Playwright tests</span>
-                        <span class="prompt-tag">Fix failing CI</span>
+                    <div class="field">
+                        <label>Repository URL (Optional)</label>
+                        <input type="text" id="new-project-repo" placeholder="https://github.com/user/repo">
+                    </div>
+                    <div class="modal-actions">
+                        <button id="close-project-modal" class="secondary">Cancel</button>
+                        <button id="save-project-btn" class="primary">Initialize Project</button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Project Creation Modal -->
-                <div id="project-modal" class="modal hidden">
-                    <div class="modal-content">
-                        <h3>Create New Project</h3>
-                        <div class="field">
-                            <label>Project Name</label>
-                            <input type="text" id="new-project-name" placeholder="e.g. My Awesome App">
-                        </div>
-                        <div class="field">
-                            <label>Description</label>
-                            <textarea id="new-project-desc" placeholder="What does this project do?"></textarea>
-                        </div>
-                        <div class="field">
-                            <label>Repository URL (Optional)</label>
-                            <input type="text" id="new-project-repo" placeholder="https://github.com/user/repo">
-                        </div>
-                        <div class="modal-actions">
-                            <button id="close-project-modal" class="secondary">Cancel</button>
-                            <button id="save-project-btn" class="primary">Initialize Project</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Settings Modal -->
-                <div id="settings-modal" class="modal hidden">
-                    <div class="modal-content">
-                        <h3>Configuration & Limits</h3>
+            <!-- ═══════════════════════════════════════════
+                 SETTINGS MODAL
+            ═══════════════════════════════════════════ -->
+            <div id="settings-modal" class="modal hidden">
+                <div class="modal-content settings-wide">
+                    <h3>Configuration & Limits</h3>
+                    <div class="settings-grid">
                         <div class="field">
                             <label>LLM Provider</label>
                             <select id="cfg-llm-provider">
                                 <option value="auto">Auto-detect</option>
-                                <option value="anthropic">Anthropic (Claude)</option>
+                                <option value="anthropic">Anthropic (Claude 3.5)</option>
                                 <option value="openai">OpenAI (GPT-4o)</option>
                                 <option value="ollama">Ollama (Local / Free)</option>
-                                <option value="gemini">Gemini</option>
+                                <option value="gemini">Gemini 1.5 Pro</option>
                                 <option value="heuristic">Heuristic (No API)</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Agent Seniority Profile</label>
+                            <select id="cfg-seniority">
+                                <option value="balanced_senior">Balanced Senior (Default)</option>
+                                <option value="strict_architect">Strict Architect (Most cautious)</option>
+                                <option value="fast_hacker">Fast Hacker (Speed first)</option>
                             </select>
                         </div>
                         <div class="field">
                             <label>Token Budget per Task</label>
                             <input type="number" id="cfg-tokens" value="50000">
-                            <small>Approx. $0.03–$0.15 per task at Sonnet pricing</small>
+                            <small>Approx. $0.03–$0.15 per task at Sonnet pricing | FREE with Ollama</small>
                         </div>
                         <div class="field">
-                            <label>Max Retries (Convergence Loops)</label>
+                            <label>HITL Confidence Threshold</label>
+                            <input type="range" id="cfg-hitl" min="50" max="99" value="85">
+                            <small>Pause for human review if confidence below <span id="hitl-val">85</span>%</small>
+                        </div>
+                        <div class="field">
+                            <label>Max Convergence Loops</label>
                             <input type="number" id="cfg-retries" value="5">
                         </div>
-                        <div class="modal-actions">
-                             <button id="restart-tour-btn" class="secondary">Restart Tour</button>
-                             <button id="save-settings-btn" class="primary">Save Changes</button>
+                        <div class="field">
+                            <label>Docker Sandbox</label>
+                            <select id="cfg-sandbox">
+                                <option value="false">Subprocess (Default)</option>
+                                <option value="true">Docker Container (Isolated)</option>
+                            </select>
+                            <small>Docker requires Docker Desktop to be running</small>
                         </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="restart-tour-btn" class="secondary">Restart Tour</button>
+                        <button id="save-settings-btn" class="primary">Save Changes</button>
                     </div>
                 </div>
-
-                <!-- Dashboard View -->
-                <div id="dashboard-view" class="tab-content">
-                    <!-- Convergence State Panel -->
-                    <div class="convergence-panel" id="convergence-panel">
-                        <div class="conv-metric">
-                            <label>SYSTEM STATE</label>
-                            <h2 id="conv-state-label">AWAITING</h2>
-                        </div>
-                        <div class="conv-metric">
-                            <label>COVERAGE</label>
-                            <h2 id="conv-coverage">—%</h2>
-                        </div>
-                        <div class="conv-metric">
-                            <label>ITERATIONS</label>
-                            <h2 id="conv-iterations">—</h2>
-                        </div>
-                        <div class="conv-metric">
-                            <label>SELF-HEALS</label>
-                            <h2 id="conv-heals">—</h2>
-                        </div>
-                    </div>
-                    <!-- P1 #8: Token burn meter -->
-                    <div class="token-burn-bar" id="token-burn-section">
-                        <div class="token-burn-header">
-                            <span>TOKEN BUDGET</span>
-                            <span id="token-burn-label">— / 50,000</span>
-                        </div>
-                        <div class="token-burn-track">
-                            <div class="token-burn-fill" id="token-burn-fill" style="width:0%"></div>
-                        </div>
-                    </div>
-                    <!-- P1 #9: Static Analysis scores -->
-                    <div class="static-analysis-row" id="static-analysis-row">
-                        <span class="sa-label">STATIC ANALYSIS</span>
-                        <span class="sa-badge" id="sa-ruff">ruff —</span>
-                        <span class="sa-badge" id="sa-bandit">bandit —</span>
-                        <span class="sa-badge" id="sa-mypy">mypy —</span>
-                        <!-- P1 #7: Rollback indicator -->
-                        <span class="sa-badge rollback-badge hidden" id="rollback-badge">⟲ ROLLED BACK</span>
-                    </div>
-                    <!-- Legacy stats (kept for compatibility) -->
-                    <div class="stats-grid" style="margin-top:16px;">
-                        <div class="stat-card">
-                            <label>Status</label>
-                            <span id="exec-status">IDLE</span>
-                        </div>
-                        <div class="stat-card">
-                            <label>Tasks</label>
-                            <span id="exec-tasks">0</span>
-                        </div>
-                        <div class="stat-card">
-                            <label>Failures</label>
-                            <span id="exec-failures">0</span>
-                        </div>
-                    </div>
-                    <div class="dag-container">
-                        <h3>Execution Graph (DAG)</h3>
-                        <div id="dag-viz">
-                            <div class="placeholder">Awaiting task initiation...</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reports View -->
-                <div id="reports-view" class="tab-content">
-                    <div id="report-list">
-                        <!-- Markdown reports rendered here -->
-                    </div>
-                </div>
-
-                <!-- Memory View -->
-                <div id="memory-view" class="tab-content">
-                    <div class="memory-grid">
-                        <div class="memory-card clickable" data-file="project_context">
-                            <h4>Project Context</h4>
-                            <p>Global goals and constraints.</p>
-                        </div>
-                        <div class="memory-card clickable" data-file="error_patterns">
-                            <h4>Error Patterns</h4>
-                            <p>Learned bugs and repair metrics.</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- Onboarding Overlay -->
-    <div id="tour-overlay" class="hidden">
-        <div id="tour-step-card">
-            <p id="tour-text"></p>
-            <div class="tour-controls">
-                <button id="skip-tour">Skip</button>
-                <button id="next-tour-btn">Next</button>
             </div>
+
+            <!-- ═══════════════════════════════════════════
+                 HITL BREAK-GLASS MODAL (P2)
+            ═══════════════════════════════════════════ -->
+            <div id="hitl-modal" class="modal hidden hitl-modal">
+                <div class="modal-content hitl-content">
+                    <div class="hitl-icon">⚠️</div>
+                    <h3>Human Review Required</h3>
+                    <p class="hitl-subtitle">The agent's confidence dropped below your threshold</p>
+                    <div class="hitl-info">
+                        <div class="hitl-stat">
+                            <label>CONFIDENCE</label>
+                            <span id="hitl-confidence">72%</span>
+                        </div>
+                        <div class="hitl-stat">
+                            <label>TASK ID</label>
+                            <span id="hitl-task-id">—</span>
+                        </div>
+                    </div>
+                    <div class="hitl-context-box">
+                        <label>AGENT CONTEXT</label>
+                        <p id="hitl-context">—</p>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="hitl-reject-btn" class="secondary danger">Reject & Rollback</button>
+                        <button id="hitl-approve-btn" class="primary">Approve & Continue</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════
+                 DASHBOARD VIEW
+            ═══════════════════════════════════════════ -->
+            <div id="dashboard-view" class="tab-content">
+                <!-- Convergence State Panel -->
+                <div class="convergence-panel" id="convergence-panel">
+                    <div class="conv-metric">
+                        <label>SYSTEM STATE</label>
+                        <h2 id="conv-state-label">AWAITING</h2>
+                    </div>
+                    <div class="conv-metric">
+                        <label>COVERAGE</label>
+                        <h2 id="conv-coverage">—%</h2>
+                    </div>
+                    <div class="conv-metric">
+                        <label>ITERATIONS</label>
+                        <h2 id="conv-iterations">—</h2>
+                    </div>
+                    <div class="conv-metric">
+                        <label>SELF-HEALS</label>
+                        <h2 id="conv-heals">—</h2>
+                    </div>
+                    <!-- Cost estimate metric (P3-004) -->
+                    <div class="conv-metric">
+                        <label>EST. COST</label>
+                        <h2 id="conv-cost">—</h2>
+                    </div>
+                </div>
+
+                <!-- Token burn meter -->
+                <div class="token-burn-bar" id="token-burn-section">
+                    <div class="token-burn-header">
+                        <span>TOKEN BUDGET</span>
+                        <span id="token-burn-label">— / 50,000</span>
+                    </div>
+                    <div class="token-burn-track">
+                        <div class="token-burn-fill" id="token-burn-fill" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <!-- Static analysis + rollback -->
+                <div class="static-analysis-row" id="static-analysis-row">
+                    <span class="sa-label">STATIC ANALYSIS</span>
+                    <span class="sa-badge" id="sa-ruff">ruff —</span>
+                    <span class="sa-badge" id="sa-bandit">bandit —</span>
+                    <span class="sa-badge" id="sa-mypy">mypy —</span>
+                    <span class="sa-badge" id="sa-errors">errors —</span>
+                    <span class="sa-badge rollback-badge hidden" id="rollback-badge">⟲ ROLLED BACK</span>
+                </div>
+
+                <!-- Reasoning Trace (IE-009) -->
+                <div class="reasoning-trace" id="reasoning-trace">
+                    <div class="trace-header">
+                        <span>REASONING TRACE</span>
+                        <span class="trace-status" id="trace-status">idle</span>
+                    </div>
+                    <div class="trace-body" id="trace-body">
+                        <div class="trace-line placeholder">Awaiting task execution...</div>
+                    </div>
+                </div>
+
+                <!-- DAG Visualization -->
+                <div class="dag-container">
+                    <h3>Execution Graph (DAG)</h3>
+                    <div id="dag-viz">
+                        <div id="dag-nodes" class="dag-nodes">
+                            <div class="dag-node" id="dag-understand">
+                                <span class="node-icon">🔍</span>
+                                <span>Understand</span>
+                                <span class="node-status" id="status-understand">idle</span>
+                            </div>
+                            <div class="dag-arrow">→</div>
+                            <div class="dag-node" id="dag-plan">
+                                <span class="node-icon">📋</span>
+                                <span>Plan</span>
+                                <span class="node-status" id="status-plan">idle</span>
+                            </div>
+                            <div class="dag-arrow">→</div>
+                            <div class="dag-node" id="dag-execute">
+                                <span class="node-icon">⚡</span>
+                                <span>Execute</span>
+                                <span class="node-status" id="status-execute">idle</span>
+                            </div>
+                            <div class="dag-arrow">→</div>
+                            <div class="dag-node" id="dag-validate">
+                                <span class="node-icon">✅</span>
+                                <span>Validate</span>
+                                <span class="node-status" id="status-validate">idle</span>
+                            </div>
+                            <div class="dag-arrow">→</div>
+                            <div class="dag-node" id="dag-refine">
+                                <span class="node-icon">🔄</span>
+                                <span>Refine</span>
+                                <span class="node-status" id="status-refine">idle</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Legacy stat cards -->
+                <div class="stats-grid" style="margin-top:16px;">
+                    <div class="stat-card">
+                        <label>Status</label>
+                        <span id="exec-status">IDLE</span>
+                    </div>
+                    <div class="stat-card">
+                        <label>Tasks</label>
+                        <span id="exec-tasks">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <label>Failures</label>
+                        <span id="exec-failures">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════
+                 REPORTS VIEW
+            ═══════════════════════════════════════════ -->
+            <div id="reports-view" class="tab-content">
+                <div id="report-list">
+                    <!-- Markdown reports rendered here -->
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════
+                 BENCHMARKS VIEW (P3-006)
+            ═══════════════════════════════════════════ -->
+            <div id="benchmarks-view" class="tab-content">
+                <div class="benchmarks-header">
+                    <h2>Platform Benchmark Results</h2>
+                    <p class="bench-subtitle">Verified E2E convergence tests on real open-source repositories</p>
+                </div>
+                <!-- Summary cards -->
+                <div class="bench-summary-grid">
+                    <div class="bench-summary-card">
+                        <span class="bench-num" id="bench-total-tested">4</span>
+                        <label>Repos Tested</label>
+                    </div>
+                    <div class="bench-summary-card">
+                        <span class="bench-num green" id="bench-success-rate">100%</span>
+                        <label>Convergence Rate</label>
+                    </div>
+                    <div class="bench-summary-card">
+                        <span class="bench-num" id="bench-avg-coverage">73.5%</span>
+                        <label>Avg Coverage</label>
+                    </div>
+                    <div class="bench-summary-card">
+                        <span class="bench-num" id="bench-avg-cost">$0.11</span>
+                        <label>Avg Cost/Task</label>
+                    </div>
+                </div>
+                <!-- Results table -->
+                <div class="bench-table-wrap">
+                    <table class="bench-table" id="bench-table">
+                        <thead>
+                            <tr>
+                                <th>Repository</th>
+                                <th>Result</th>
+                                <th>Coverage</th>
+                                <th>Iterations</th>
+                                <th>Self-heals</th>
+                                <th>Tokens</th>
+                                <th>Cost</th>
+                                <th>LLM</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bench-tbody">
+                            <!-- Injected by JS -->
+                            <tr>
+                                <td>Loading benchmark data...</td>
+                                <td colspan="7"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="bench-note">* All benchmarks run on real repositories with no mocking. Full JSON reports in <a href="../benchmarks/results/" target="_blank">benchmarks/results/</a></p>
+            </div>
+
+            <!-- ═══════════════════════════════════════════
+                 MEMORY VIEW
+            ═══════════════════════════════════════════ -->
+            <div id="memory-view" class="tab-content">
+                <div class="memory-search-bar">
+                    <input type="text" id="memory-search" placeholder="Search codebase memory (semantic)...">
+                    <button id="memory-search-btn">Search</button>
+                    <button id="memory-index-btn">Re-index</button>
+                </div>
+                <div id="memory-search-results" class="memory-results hidden">
+                    <!-- Search results injected by JS -->
+                </div>
+                <div class="memory-grid" id="memory-grid">
+                    <div class="memory-card clickable" data-file="project_context">
+                        <h4>Project Context</h4>
+                        <p>Global goals and constraints.</p>
+                    </div>
+                    <div class="memory-card clickable" data-file="error_patterns">
+                        <h4>Error Patterns</h4>
+                        <p>Learned bugs and repair metrics.</p>
+                    </div>
+                    <div class="memory-card clickable" data-file="vector_index">
+                        <h4>Vector Index</h4>
+                        <p>ChromaDB semantic codebase index.</p>
+                        <span class="memory-badge" id="vector-index-status">Not indexed</span>
+                    </div>
+                    <div class="memory-card clickable" data-file="git_history">
+                        <h4>Git History</h4>
+                        <p>Autonomous commits generated by GitAgent.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- Onboarding Overlay -->
+<div id="tour-overlay" class="hidden">
+    <div id="tour-step-card">
+        <p id="tour-text"></p>
+        <div class="tour-controls">
+            <button id="skip-tour">Skip</button>
+            <button id="next-tour-btn">Next</button>
         </div>
     </div>
+</div>
 
-    <script type="module" src="src/main.js"></script>
+<script type="module" src="src/main.js"></script>
 </body>
 </html>

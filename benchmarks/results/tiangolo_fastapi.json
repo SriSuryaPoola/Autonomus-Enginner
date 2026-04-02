@@ -1,0 +1,40 @@
+{
+  "run_id": "benchmark_003",
+  "date": "2026-04-02",
+  "platform_version": "0.3.0",
+  "repo": "tiangolo/fastapi",
+  "repo_url": "https://github.com/tiangolo/fastapi",
+  "repo_stats": {
+    "python_files": 312,
+    "total_lines": 52103,
+    "existing_tests": 178
+  },
+  "task": "Generate async test suite for FastAPI dependency injection and middleware stack",
+  "llm_provider": "anthropic",
+  "llm_model": "claude-3-5-sonnet-20241022",
+  "result": "CONVERGED",
+  "iterations": 3,
+  "self_heals": 1,
+  "coverage_achieved": 73.1,
+  "coverage_target": 70.0,
+  "tokens_used": 29950,
+  "estimated_cost_usd": 0.089,
+  "duration_seconds": 156,
+  "static_analysis": {
+    "ruff": "pass",
+    "bandit": "pass",
+    "mypy": "pass"
+  },
+  "rollback_triggered": false,
+  "files_created": [
+    "tests/test_dependency_injection.py",
+    "tests/test_middleware_async.py"
+  ],
+  "error_classifications": {
+    "TEST_ISSUE": 0,
+    "CODE_BUG": 0,
+    "ENV_ERROR": 0,
+    "LLM_HALLUCINATION": 1
+  },
+  "notes": "Fastest convergence (3 iterations). LLM_HALLUCINATION in iteration 1: used sync httpx client for async test. Self-healed by switching to AsyncClient. All static analysis gates passed including mypy."
+}

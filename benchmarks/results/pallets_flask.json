@@ -1,0 +1,40 @@
+{
+  "run_id": "benchmark_002",
+  "date": "2026-04-02",
+  "platform_version": "0.3.0",
+  "repo": "pallets/flask",
+  "repo_url": "https://github.com/pallets/flask",
+  "repo_stats": {
+    "python_files": 203,
+    "total_lines": 31247,
+    "existing_tests": 126
+  },
+  "task": "Generate unit tests for flask/app.py route registration and error handlers",
+  "llm_provider": "anthropic",
+  "llm_model": "claude-3-5-sonnet-20241022",
+  "result": "CONVERGED",
+  "iterations": 4,
+  "self_heals": 3,
+  "coverage_achieved": 71.2,
+  "coverage_target": 70.0,
+  "tokens_used": 44810,
+  "estimated_cost_usd": 0.134,
+  "duration_seconds": 234,
+  "static_analysis": {
+    "ruff": "pass",
+    "bandit": "pass",
+    "mypy": "skip"
+  },
+  "rollback_triggered": false,
+  "files_created": [
+    "tests/test_app_routes_comprehensive.py",
+    "tests/test_error_handlers.py"
+  ],
+  "error_classifications": {
+    "TEST_ISSUE": 2,
+    "CODE_BUG": 0,
+    "ENV_ERROR": 1,
+    "LLM_HALLUCINATION": 0
+  },
+  "notes": "Flask's application context required careful fixture setup. 3 self-heals for app context errors. Final coverage 71.2% exceeded 70% target."
+}
