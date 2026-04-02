@@ -29,16 +29,15 @@ The system operates across three tightly integrated layers:
 
 ---
 
-## ✨ Phase 3 Features
+## ✨ Phase 4 Features
 
-This system has been upgraded to **Phase 3**, transforming it into a production-grade engineering platform with real-world integrations:
+This system has been upgraded to **Phase 4**, introducing the **Agentic Testing Engine**. It deploys specialized AI agents to generate, execute, and iteratively self-correct code and tests in completely isolated environments:
 
-* **GitHub & CI/CD Integration:** Native support for triggering GitHub Actions, reading pipeline logs, and opening Pull Requests via the `gh` CLI.
-* **CI/CD Self-Healing Loop:** The Manager Agent autonomously detects CI failures post-deployment and enqueues high-priority debugging tasks for the developer.
-* **Real-Time Terminal Dashboard:** Launch with `--dashboard` to see a live execution trace of all agents, DAG states, and failure metrics.
-* **Fuzzy Path Matching:** Intelligent file resolution (using `difflib`) to handle user typos and locate the correct source files for testing.
-* **Persistent Memory IO:** Project context, error patterns, task histories, and **fix strategies** are saved natively to a `memory/` folder in JSON format.
-* **13-Field Protocol:** Strict adherence to the HiClaw communication standard for robust inter-agent state tracking.
+* **Sandbox Executor:** Spins off isolated subprocess environments resolving contextual virtual environments (`.venv`), ensuring test executions are safe and strictly bounded by CPU limits and timeouts.
+* **Patch Engine:** Triages testing errors using either Heuristics (Rule-based Regex fixing) or LLMs (Dynamic Code Bug solutions).
+* **5-Iteration Convergence Cycle:** During test creation, agents pass outputs to the Sandbox and run a self-healing loop up to 5 times.
+* **Coverage Deadlines:** Verifies total coverage percentages against source code using `pytest-cov`. If coverage falls beneath the threshold, the QA Agent autonomously writes explicit gap-filling tests.
+* **MANDATORY Quality Scorer:** Inside Step 5 (`Validate`), agents self-assess output. If completeness, modularity, or correctness thresholds fail, the file never hits the Sandbox executor.
 
 ---
 
